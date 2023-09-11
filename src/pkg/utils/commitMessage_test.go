@@ -4,8 +4,6 @@ import (
 	"errors"
 	"goji/pkg/config"
 	"goji/pkg/models"
-	"os"
-	"os/exec"
 	"testing"
 
 	"github.com/AlecAivazis/survey/v2"
@@ -143,46 +141,5 @@ func TestIsInSkipQuestions(t *testing.T) {
 	for _, tc := range testCases {
 		result := isInSkipQuestions(tc.value, tc.skipQuestions)
 		assert.Equal(t, tc.expected, result)
-	}
-}
-
-func createTempGitRepo(t *testing.T) (string, func()) {
-	repoDir, err := os.MkdirTemp("", "goji-test-repo")
-	if err != nil {
-		t.Fatalf("Failed to create temp dir: %v", err)
-	}
-
-	cmd := exec.Command("git", "init")
-	cmd.Dir = repoDir
-	if err := cmd.Run(); err != nil {
-		t.Fatalf("Failed to initialize git repo: %v", err)
-	}
-
-	cleanup := func() {
-		os.RemoveAll(repoDir)
-	}
-
-	return repoDir, cleanup
-}
-
-func createFileAndStage(t *testing.T, repoDir, filename string) {
-	filePath := repoDir + "/" + filename
-
-	file, err := os.Create(filePath)
-	if err != nil {
-		t.Fatalf("Failed to create file: %v", err)
-	}
-	defer file.Close()
-
-	content := []byte("Goji test file")
-	_, err = file.Write(content)
-	if err != nil {
-		t.Fatalf("Failed to write to file: %v", err)
-	}
-
-	cmd := exec.Command("git", "add", filename)
-	cmd.Dir = repoDir
-	if err := cmd.Run(); err != nil {
-		t.Fatalf("Failed to stage file: %v", err)
 	}
 }
