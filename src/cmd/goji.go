@@ -78,6 +78,16 @@ func main() {
 		log.Fatalf(color.YellowString("Error loading config file: %v"), err)
 	}
 
+	isAdd, err := utils.CheckAddStage()
+	if err != nil {
+		log.Fatalf(color.YellowString("Error checking git add stage: %v"), err)
+	}
+
+	if !isAdd {
+		fmt.Println(color.YellowString("No files added to stage. Nothing to commit."))
+		return
+	}
+
 	commitMessage, err := utils.AskQuestions(config)
 	if err != nil {
 		log.Fatalf(color.YellowString("Error asking questions: %v"), err)
